@@ -1,0 +1,53 @@
+# config.yml
+# 
+# If you don't run setup, you can put the required settings here.
+# access_key: 'x'
+# secret_key: 'x'
+# asset_bucket: 'x'
+# security_group: 'x'
+# region: 'x'
+# zone: 'x'
+# key_pair: 'x'
+# 
+# Any key/value defined here is accessible in the templates through
+# the settings variable.
+# e.x.:
+# foo: 'bar'
+
+# Tree for picking images. Feel free to change, but be careful.
+images:
+    us-east-1:
+        ubuntu:
+            '10.10':
+                64bit: ami-548c783d
+                32bit: ami-508c7839
+            '10.04':
+                64bit: ami-4a0df923
+                32bit: ami-480df921
+    us-west-1:
+        ubuntu:
+            '10.10':
+                64bit: ami-ca1f4f8f
+                32bit: ami-c81f4f8d
+            '10.04':
+                64bit: ami-880c5ccd
+                32bit: ami-8c0c5cc9
+
+# Shortcut names for instance sizes. Because I can never remember 
+# what those prefixes are.
+sizes:
+    micro:   t1.micro
+    small:   m1.small
+    medium:  c1.medium
+    large:   m1.large
+    xl:      m1.xlarge
+    xlcpu:   c1.xlarge
+    xlmem:   m2.xlarge
+    2xl:     m2.2xlarge
+    3xl:     m2.3xlarge
+
+# Which instances support which architectures
+archs:
+    64bit: [micro, large, xl, xlcpu, xlmem, 2xl, 3xl]
+    32bit: [micro, small, medium, large, xl, xlcpu, xlmem, 2xl, 3xl]
+

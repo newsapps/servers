@@ -1,0 +1,8 @@
+server:
+    type:           'blank'
+    script:         'newsapps/base.sh'
+    size:           'micro'
+    os:             'ubuntu'
+    version:        '10.10'
+    arch:           '64bit'
+    security_group: 'default'
