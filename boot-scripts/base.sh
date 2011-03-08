@@ -82,6 +82,12 @@ if [ -f $ASSET_DIR/known_hosts ]; then
     cp $ASSET_DIR/known_hosts /home/$USERNAME/.ssh/known_hosts
 fi
 
+# fix permissions in ssh folder
+chmod -Rf go-rwx /home/$USERNAME/.ssh
+
+# setup private key to be used by default for ssh connections
+echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USERNAME/.ssh/config
+
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
 
