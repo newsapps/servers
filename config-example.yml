@@ -13,6 +13,12 @@
 # the settings variable.
 # e.x.:
 # foo: 'bar'
+#
+# If you would like Cloudkick installed on your servers, enter your 
+# oauth key and secret here.
+# cloudkick_oauth_key: k3y123
+# cloudkick_oauth_secret: s3cr3t123
+
 
 # Tree for picking images. Feel free to change, but be careful.
 images:

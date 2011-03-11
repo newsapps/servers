@@ -5,8 +5,8 @@ import sys
 import os
 import subprocess
 
-TYPE='memcache'
-COMMAND='sudo service memcached restart'
+TYPE='app'
+COMMAND='varnish_reload ~/varnish/`hostname`.vcl'
 
 def get_servers(filters):
 

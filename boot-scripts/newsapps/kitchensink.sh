@@ -43,10 +43,7 @@ a2enmod rewrite
 # apps dirs
 sudo -u $USERNAME \
     mkdir /home/$USERNAME/sites \
-          /home/$USERNAME/sites/default \
           /home/$USERNAME/sites/virtualenvs \
-          /home/$USERNAME/sites/default/defaultproject \
-          /home/$USERNAME/sites/conf \
           /home/$USERNAME/sites/apache \
           /home/$USERNAME/logs
 

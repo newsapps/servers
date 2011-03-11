@@ -1,0 +1,20 @@
+#!/bin/bash
+
+HOSTPORT=":6082"
+NOW=`date +%s`
+
+error()
+{
+echo 1>&2 "Failed to reload $1."
+exit 1
+}
+
+if [ -f "$1" ]; then
+    varnishadm -T $HOSTPORT vcl.load reload$NOW $1 || error
+    varnishadm -T $HOSTPORT vcl.use reload$NOW || error
+    echo "Current configs:"
+    varnishadm -T $HOSTPORT vcl.list
+else
+    error
+fi
+

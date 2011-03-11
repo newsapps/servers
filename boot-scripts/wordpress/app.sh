@@ -7,16 +7,11 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         zip git-core subversion unattended-upgrades \
         build-essential \
         apache2 \
-        php5 php5-mysql php5-gd php-pear libapache2-mod-php5 \
-        nfs-common
+        php5 php5-mysql php5-gd php-pear libapache2-mod-php5
 
 # enable mod_rewrite
 a2enmod rewrite
 
-mkdir /mnt/apps
-echo 'nfs:/mnt/apps	/mnt/apps	nfs	defaults' >> /etc/fstab
-mount /mnt/apps
-
-ln -s /mnt/apps/sites /home/$USERNAME/sites
+{% include "_nfs-client.sh" %}
 
 {% endblock %}

@@ -29,15 +29,13 @@ if __name__ == '__main__':
         f = { 'tag:Cluster': os.getenv(sys.argv[1]) }
     elif os.getenv('CLUSTER'):
         f = { 'tag:Cluster': os.getenv('CLUSTER') }
-    elif os.getenv('SECURITY_GROUP'):
-        f = { 'group_id': os.getenv('SECURITY_GROUP') }
     else:
         print('%s CLUSTER_NAME' % sys.argv[0])
         exit()
 
-    servers = get_servers(f.update({'tag:Type':TYPE, 
-                          'instance-state-name':'running'}))
+    f.update({'tag:Type':TYPE, 'instance-state-name':'running'})
+    servers = get_servers(f)
 
     for s in servers:
-        command = "ssh -o \"StrictHostKeyChecking no\" -i $PRIVATE_KEY newsapps@%s '%s'" % (s['public_dns_name'],COMMAND)
+        command = "ssh -o \"StrictHostKeyChecking no\" %s '%s'" % (s['public_dns_name'], COMMAND)
         subprocess.call(command, shell=True)

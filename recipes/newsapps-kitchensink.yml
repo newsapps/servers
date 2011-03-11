@@ -1,6 +1,6 @@
 server:
     type:     'kitchensink'
-    name:     'newsapps-kitchensink'
+    name:     'kitchensink'
     hosts:    'app1, db, cron, mail, log, cache, memcache'
     script:   'newsapps/kitchensink.sh'
     size:     'micro'

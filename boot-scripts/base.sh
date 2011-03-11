@@ -38,7 +38,7 @@ secret_key = {{settings.secret_key}}" > /home/$USERNAME/.s3cfg
 
 # Setup profile stuff
 echo "export SECURITY_GROUP={{settings.security_group}}
-export PRIVATE_KEY=/home/newsapps/.ssh/{{settings.key_pair}}.pem
+export PRIVATE_KEY=/home/$USERNAME/.ssh/{{settings.key_pair}}.pem
 export AWS_ACCESS_KEY_ID={{settings.access_key}}
 export AWS_SECRET_ACCESS_KEY={{settings.secret_key}}
 {% if server.cluster -%}
@@ -90,6 +90,10 @@ echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USER
 
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
+
+{% if settings.cloudkick_oauth_key -%}
+{% include "_cloudkick.sh" %}
+{% endif -%}
 
 {% if server.cluster -%}
 # make sure our hosts file is always up to date
