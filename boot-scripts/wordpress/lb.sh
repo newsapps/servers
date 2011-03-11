@@ -10,4 +10,11 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
 
 {% include "_nfs-client.sh" %}
 
+# Install varnish config file
+cp /home/$USERNAME/cloud-commander/wordpress/etc/default/varnish /etc/default/varnish
+chown root:root /etc/default/varnish
+chmod 644 /etc/default/varnish
+ 
+
+
 {% endblock %}

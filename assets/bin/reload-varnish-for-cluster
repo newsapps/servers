@@ -5,8 +5,8 @@ import sys
 import os
 import subprocess
 
-TYPE='app'
-COMMAND='varnish_reload ~/varnish/`hostname`.vcl'
+TYPE='lib'
+COMMAND='varnish_reload'
 
 def get_servers(filters):
 

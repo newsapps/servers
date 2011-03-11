@@ -14,6 +14,11 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
 # enable mod_rewrite
 a2enmod rewrite
 
+# Install apache config
+cp /home/$USERNAME/cloud-commander/wordpress/etc/apache2/apache2.conf /etc/apache2/apache2.conf
+chown root:root /etc/apache2/apache2.conf
+chmod 644 /etc/apache2/apache2.conf
+
 {% include "_nfs-client.sh" %}
 
 {% endblock %}
