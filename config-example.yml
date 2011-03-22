@@ -38,6 +38,12 @@ images:
             '10.04':
                 64bit: ami-880c5ccd
                 32bit: ami-8c0c5cc9
+    eu-west-1:
+        ubuntu:
+            '10.10': 
+                32bit: ami-465c6932
+                64bit: ami-405c6934
+
 
 # Shortcut names for instance sizes. Because I can never remember 
 # what those prefixes are.
