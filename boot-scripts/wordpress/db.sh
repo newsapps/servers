@@ -10,27 +10,10 @@ DEBIAN_FRONTEND='noninteractive' \
 apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         zip git-core subversion unattended-upgrades \
         build-essential \
-        mysql-server \
-        portmap nfs-common nfs-kernel-server \
-        linux-image-virtual
+        mysql-server
 
-# setup the directories for sharing, set permissions to the
-# wordpress user and apache group, make the permissions sticky
-mkdir /mnt/apps /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish
-chown wordpress:www-data /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish
-chmod ug+s /mnt/apps/sites /mnt/apps/apache
-
-# Add our share to NFS exports
-echo '/mnt/apps 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exports
-
-# Fix for NFSv4 that's sometimes needed for proper permissions
-sed s/^NEED_IDMAPD=$/NEED_IDMAPD=yes/g /etc/default/nfs-common >/etc/default/nfs-common.new
-mv /etc/default/nfs-common.new /etc/default/nfs-common
-#service nfs-kernel-server reload
-
-ln -s /mnt/apps/sites /home/$USERNAME/sites
-ln -s /mnt/apps/apache /home/$USERNAME/apache
-ln -s /mnt/apps/varnish /home/$USERNAME/varnish
+# Needs a reboot -
+{% include "_nfs-server.sh" %}
 
 # MySQL configuration
 
