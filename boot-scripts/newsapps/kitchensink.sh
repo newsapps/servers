@@ -7,7 +7,7 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         zip git-core subversion unattended-upgrades \
         build-essential libxml2-dev libxslt-dev \
         apache2 apache2-mpm-worker apache2-utils apache2.2-common \
-        memcached postfix varnish \
+        memcached postfix \
         proj libgeoip1 geoip-database python-gdal \
         python-setuptools python-virtualenv python-pip ruby libruby-extras python-dev \
         libapache2-mod-wsgi virtualenvwrapper\
@@ -37,26 +37,35 @@ sudo -u postgres psql -d template_postgis -c "GRANT ALL ON geometry_columns TO P
 sudo -u postgres psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 
 # some apache config
-a2dismod autoindex authn_file cgid negotiation
 a2enmod rewrite
 
 # apps dirs
 sudo -u $USERNAME \
     mkdir /home/$USERNAME/sites \
           /home/$USERNAME/sites/virtualenvs \
-          /home/$USERNAME/sites/apache \
+          /home/$USERNAME/apache \
           /home/$USERNAME/logs
+
+# Compatibility
+ln -s /home/$USERNAME/apache /home/$USERNAME/sites/apache
 
 # setup virtualenvwrapper
 echo "export WORKON_HOME=/home/$USERNAME/sites/virtualenvs" >> /home/$USERNAME/.bashrc
 
-chgrp www-data /home/$USERNAME/logs
-chmod g+w /home/$USERNAME/logs
+chmod ugo+rw /home/$USERNAME/logs
 
 # install custom configs and scripts
-cp -Rf $ASSET_DIR/newsapps/app/* /
-cp -Rf $ASSET_DIR/newsapps/cron/* /
-cp -Rf $ASSET_DIR/newsapps/db/* /
-cp -Rf $ASSET_DIR/newsapps/lb/* /
+cd $ASSET_DIR/newsapps
+cp etc/rsyslog.d/99-newsapps-admin.conf      /etc/rsyslog.d/
+cp etc/apache2/apache2.conf                  /etc/apache2/
+cp etc/pgpool.conf                           /etc/
+cp etc/postgresql/8.4/main/pg_hba.conf       /etc/postgresql/8.4/main/pg_hba.conf
+cp etc/postgresql/8.4/main/postgresql.conf   /etc/postgresql/8.4/main/postgresql.conf
+
+# Restart services
+service apache2 restart
+service postgresql restart
+service pgpool restart
+service rsyslog restart
 
 {% endblock %}
