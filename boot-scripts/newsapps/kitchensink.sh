@@ -57,6 +57,7 @@ chmod ugo+rw /home/$USERNAME/logs
 # install custom configs and scripts
 cd $ASSET_DIR/newsapps
 cp etc/rsyslog.d/99-newsapps-admin.conf      /etc/rsyslog.d/
+cp etc/rsyslog.d/50-default.conf             /etc/rsyslog.d/
 cp etc/apache2/apache2.conf                  /etc/apache2/
 cp etc/pgpool.conf                           /etc/
 cp etc/postgresql/8.4/main/pg_hba.conf       /etc/postgresql/8.4/main/pg_hba.conf
