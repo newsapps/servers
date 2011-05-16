@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOSTPORT=":6082"
+HOST="localhost:6082"
 NOW=`date +%s`
 FILENAME=~/varnish/`hostname`.vcl
 
@@ -11,10 +11,10 @@ exit 1
 }
 
 if [ -f "$FILENAME" ]; then
-    varnishadm -T $HOSTPORT vcl.load reload$NOW $FILENAME || error
-    varnishadm -T $HOSTPORT vcl.use reload$NOW || error
+    varnishadm -T $HOST vcl.load reload$NOW $FILENAME || error
+    varnishadm -T $HOST vcl.use reload$NOW || error
     echo "Current configs:"
-    varnishadm -T $HOSTPORT vcl.list
+    varnishadm -T $HOST vcl.list
 else
     error
 fi
