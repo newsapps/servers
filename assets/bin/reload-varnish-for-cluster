@@ -5,7 +5,7 @@ import sys
 import os
 import subprocess
 
-TYPE='lib'
+TYPE='lb'
 COMMAND='varnish_reload'
 
 def get_servers(filters):
