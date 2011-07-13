@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+
+import boto
+import sys
+import os
+import subprocess
+import argparse
+
+def get_servers(filters, access_key=None, secret_key=None):
+
+    if access_key and secret_key:
+        conn = boto.connect_ec2(access_key, secret_key)
+    else:
+        conn = boto.connect_ec2()
+
+    reservations = conn.get_all_instances(filters=filters)
+
+    servers = list()
+
+    for r in reservations:
+        for i in r.instances:
+           s = i.__dict__
+           s['security_groups'] = map(lambda x: x.id, r.groups)
+           servers.append(s)
+
+    if len(servers) is 0:
+        raise Exception("No servers found")
+
+    return servers
+
+if __name__ == '__main__':
+    commands_description = "Run a command on all the servers in the cluster."
+
+    parser = argparse.ArgumentParser(description=commands_description)
+    parser.add_argument("-k", "--access-key", dest="access_key",
+                        help="Your AWS access key. Defaults to AWS_ACCESS_KEY_ID environment variable.")
+    parser.add_argument("-s", "--secret-key", dest="secret_key",
+                        help="Your AWS secret key. Defaults to AWS_SECRET_ACCESS_KEY environment variable.")
+
+    parser.add_argument("-c", "--cluster", dest="cluster",
+                        help="Cluster to target. Defaults to CLUSTER environment variable.")
+    parser.add_argument("-t", "--type", dest="server_type",
+                        help="Server type to target. Defaults to all servers.")
+
+    parser.add_argument("command",
+                        help="Shell command to run on targeted servers.")
+
+    args = parser.parse_args()
+
+    if args.cluster:
+        f = { 'tag:Cluster': args.cluster }
+    elif os.getenv('CLUSTER'):
+        f = { 'tag:Cluster': os.getenv('CLUSTER') }
+    else:
+        parser.error("I need to know which cluster.")
+        exit()
+
+    if args.server_type:
+        f.update({'tag:Type':args.server_type})
+
+    f.update({'instance-state-name':'running'})
+
+    try:
+        if args.access_key and args.secret_key:
+            servers = get_servers(f, access_key=args.access_key,
+                    secret_key=args.secret_key)
+        else:
+            servers = get_servers(f)
+    except Exception as e:
+        parser.error(e)
+
+    for s in servers:
+        command = "ssh -o \"StrictHostKeyChecking no\" %s '%s'" % (s['public_dns_name'], args.command)
+        subprocess.call(command, shell=True)

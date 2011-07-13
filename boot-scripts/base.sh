@@ -82,6 +82,9 @@ if [ -f $ASSET_DIR/known_hosts ]; then
     cp $ASSET_DIR/known_hosts /home/$USERNAME/.ssh/known_hosts
 fi
 
+# make sure ssh is set to start at boot
+update-rc.d ssh enable 2345
+
 # fix permissions in ssh folder
 chmod -Rf go-rwx /home/$USERNAME/.ssh
 
@@ -97,7 +100,8 @@ echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USER
 
 {% if server.cluster -%}
 # make sure our hosts file is always up to date
-echo "@hourly    source /etc/profile && /usr/local/bin/hosts-for-cluster" > /etc/cron.d/cloud-commander
+echo "@hourly    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-cluster" > /etc/cron.d/cloud-commander
+echo "@reboot    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-cluster" >> /etc/cron.d/cloud-commander
 {% endif -%}
 
 {% block install %}

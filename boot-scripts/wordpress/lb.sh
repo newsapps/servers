@@ -8,6 +8,8 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         build-essential \
         varnish
 
+{% include "_syslog-client.sh" %}
+
 {% include "_nfs-client.sh" %}
 
 # Install varnish config file

@@ -14,10 +14,17 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
 # enable mod_rewrite
 a2enmod rewrite
 
+# disable deflate
+a2dismod deflate
+
 # Install apache config
 cp /home/$USERNAME/cloud-commander/wordpress/etc/apache2/apache2.conf /etc/apache2/apache2.conf
 chown root:root /etc/apache2/apache2.conf
 chmod 644 /etc/apache2/apache2.conf
+
+reload apache2
+
+{% include "_syslog-server.sh" %}
 
 # Needs a reboot -
 {% include "_nfs-server.sh" %}
