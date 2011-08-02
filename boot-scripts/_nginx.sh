@@ -1,21 +1,22 @@
-# need php5-fpm
-# need default ubuntu nginx config files
+# install some basic stuff
+DEBIAN_FRONTEND='noninteractive' \
+apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
+        libpcre3-dev libxml2-dev libxslt1-dev libgd2-xpm-dev libgeoip-dev \
+        nginx-common
 
 cd /home/$USERNAME
 
 # Grab latest nginx code
-curl -O http://nginx.org/download/nginx-1.0.5.tar.gz
-tar zxf nginx-1.0.5.tar.gz
+curl http://nginx.org/download/nginx-1.0.5.tar.gz | tar zxf -
 
 cd nginx-1.0.5
 
 # Patch nginx for syslog support
-curl -O https://raw.github.com/yaoweibin/nginx_syslog_patch/master/new_syslog_0.8.54.patch
-patch -p1 < new_syslog_0.8.54.patch
+curl https://raw.github.com/yaoweibin/nginx_syslog_patch/master/new_syslog_0.8.54.patch | patch -p1
 
 # Configure for ubuntu and needed plugins
 ./configure \
-    --prefix=/etc/nginx \
+    --prefix=/usr \
     --conf-path=/etc/nginx/nginx.conf \
     --error-log-path=/var/log/nginx/error.log \
     --http-client-body-temp-path=/var/lib/nginx/body \
@@ -39,9 +40,11 @@ patch -p1 < new_syslog_0.8.54.patch
     --with-http_xslt_module \
     --with-ipv6 \
     --with-sha1=/usr/include/openssl \
-    --with-md5=/usr/include/openssl \
+    --with-md5=/usr/include/openssl
 
 make
 make install
+
+update-rc.d nginx enable 2345
 
 cd ~
