@@ -7,9 +7,7 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         zip git-core subversion unattended-upgrades \
         build-essential \
         apache2 \
-        php5 php5-mysql php5-gd php-pear libapache2-mod-php5 php-apc php5-curl php-memcache \
-        mysql-client \
-        postfix
+        php5 php5-mysql php5-gd php-pear libapache2-mod-php5 php-apc php5-curl php5-memcache
 
 # enable mod_rewrite
 a2enmod rewrite
@@ -24,13 +22,8 @@ chmod 644 /etc/apache2/apache2.conf
 
 reload apache2
 
-{% include "_syslog-server.sh" %}
+{% include "_syslog-client.sh" %}
 
-# Needs a reboot -
 {% include "_nfs-server.sh" %}
 
-{% endblock %}
-
-{% block finish %}
-reboot
 {% endblock %}

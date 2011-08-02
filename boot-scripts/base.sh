@@ -3,6 +3,9 @@
 USERNAME=ubuntu
 {% endblock %}
 
+# echo commands to the console and stop on errors
+set -e -x
+
 # Make sure we have a locale defined
 export LANG="en_US.UTF-8"
 
