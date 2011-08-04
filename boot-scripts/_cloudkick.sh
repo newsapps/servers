@@ -18,4 +18,4 @@ DEBIAN_FRONTEND='noninteractive' \
 apt-get -q -y -o Dpkg::Options::='--force-confnew' install cloudkick-agent
 
 # Install plugins
-cp $ASSET_DIR/newsapps/usr/lib/cloudkick-agent/plugins/* /usr/lib/cloudkick-agent/plugins/
+cp -Rf $ASSET_DIR/newsapps/usr/lib/cloudkick-agent /usr/lib/
