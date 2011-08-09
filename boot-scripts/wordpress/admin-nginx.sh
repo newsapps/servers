@@ -7,11 +7,8 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         zip git-core subversion unattended-upgrades \
         build-essential \
         php5 php5-mysql php5-gd php5-fpm php-pear php-apc php5-curl php5-memcache \
-        memcached
-
-# Install memcached, but disable it by default
-service memcached stop
-update-rc.d memcached disable 2345
+        mysql-client \
+        postfix
 
 # include the script to build nginx from source
 {% include "_nginx.sh" %}
@@ -26,8 +23,8 @@ cp /home/$USERNAME/cloud-commander/wordpress/etc/php5/fpm/pool.d/www.conf /etc/p
 chown root:root /etc/php5/fpm/pool.d/www.conf
 chmod 644 /etc/php5/fpm/pool.d/www.conf
 
-{% include "_syslog-client.sh" %}
-
 {% include "_nfs-client.sh" %}
+
+{% include "_syslog-server.sh" %}
 
 {% endblock %}

@@ -18,3 +18,4 @@ mount /mnt/apps
 ln -s /mnt/apps/sites /home/$USERNAME/sites
 ln -s /mnt/apps/apache /home/$USERNAME/apache
 ln -s /mnt/apps/varnish /home/$USERNAME/varnish
+ln -s /mnt/apps/nginx /home/$USERNAME/nginx

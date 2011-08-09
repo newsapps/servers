@@ -20,9 +20,10 @@ echo '/mnt/apps 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exp
 # Fix for NFSv4 that's sometimes needed for proper permissions
 sed s/^NEED_IDMAPD=$/NEED_IDMAPD=yes/g /etc/default/nfs-common >/etc/default/nfs-common.new
 mv /etc/default/nfs-common.new /etc/default/nfs-common
-#service nfs-kernel-server reload
+service nfs-kernel-server reload
 
 ln -s /mnt/apps/sites /home/$USERNAME/sites
 ln -s /mnt/apps/apache /home/$USERNAME/apache
 ln -s /mnt/apps/varnish /home/$USERNAME/varnish
+ln -s /mnt/apps/nginx /home/$USERNAME/nginx
 

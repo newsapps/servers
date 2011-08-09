@@ -9,10 +9,11 @@ cd /home/$USERNAME
 # Grab latest nginx code
 curl http://nginx.org/download/nginx-1.0.5.tar.gz | tar zxf -
 
-cd nginx-1.0.5
-
 # Patch nginx for syslog support
-curl https://raw.github.com/yaoweibin/nginx_syslog_patch/master/new_syslog_0.8.54.patch | patch -p1
+git clone https://github.com/yaoweibin/nginx_syslog_patch.git
+
+cd nginx-1.0.5
+patch -p1 < /home/$USERNAME/nginx_syslog_patch/new_syslog_0.8.54.patch
 
 # Configure for ubuntu and needed plugins
 ./configure \
@@ -40,11 +41,19 @@ curl https://raw.github.com/yaoweibin/nginx_syslog_patch/master/new_syslog_0.8.5
     --with-http_xslt_module \
     --with-ipv6 \
     --with-sha1=/usr/include/openssl \
-    --with-md5=/usr/include/openssl
+    --with-md5=/usr/include/openssl \
+    --add-module=/home/$USERNAME/nginx_syslog_patch
 
 make
 make install
 
-update-rc.d nginx enable 2345
+# start it at boot
+update-rc.d nginx enable 2 3 4 5
+
+# install custom config
+cp /home/$USERNAME/cloud-commander/newsapps/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# start it!
+service nginx start
 
 cd ~

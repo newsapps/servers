@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/bash -x
 {% block start %}
 USERNAME=ubuntu
 {% endblock %}
 
 # echo commands to the console and stop on errors
-set -e -x
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Make sure we have a locale defined
 export LANG="en_US.UTF-8"
@@ -92,7 +92,9 @@ update-rc.d ssh enable 2345
 chmod -Rf go-rwx /home/$USERNAME/.ssh
 
 # setup private key to be used by default for ssh connections
-echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USERNAME/.ssh/config
+if [ -f /home/$USERNAME/.ssh/{{settings.key_pair}}.pem ]; then
+    echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USERNAME/.ssh/config
+fi
 
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster

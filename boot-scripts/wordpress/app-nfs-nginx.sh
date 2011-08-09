@@ -28,6 +28,6 @@ chmod 644 /etc/php5/fpm/pool.d/www.conf
 
 {% include "_syslog-client.sh" %}
 
-{% include "_nfs-client.sh" %}
+{% include "_nfs-server.sh" %}
 
 {% endblock %}
