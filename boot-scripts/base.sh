@@ -3,6 +3,9 @@
 USERNAME=ubuntu
 {% endblock %}
 
+# Include functions
+{% include "lib.sh" %}
+
 # echo commands to the console and stop on errors
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
@@ -115,6 +118,10 @@ echo "@reboot    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-c
 
 # Fix any perms that might have gotten messed up
 chown -Rf $USERNAME:$USERNAME /home/$USERNAME
+
+# fix asset permissions
+chown -Rf root:root $ASSET_DIR
+chmod -Rf 755 $ASSET_DIR
 
 # Update CC status - remove instance booting semaphore from s3
 s3cmd del --config=/home/$USERNAME/.s3cfg {{settings.assets_s3_url}}`ec2metadata --instance-id`._cc_

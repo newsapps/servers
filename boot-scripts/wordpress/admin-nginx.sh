@@ -14,14 +14,10 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
 {% include "_nginx.sh" %}
 
 # Install nginx config
-cp /home/$USERNAME/cloud-commander/newsapps/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-chown root:root /etc/nginx/nginx.conf
-chmod 644 /etc/nginx/nginx.conf
+install_file newsapps /etc/nginx/nginx.conf
 
 # Install php-fpm config
-cp /home/$USERNAME/cloud-commander/wordpress/etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf
-chown root:root /etc/php5/fpm/pool.d/www.conf
-chmod 644 /etc/php5/fpm/pool.d/www.conf
+install_file wordpress /etc/php5/fpm/pool.d/www.conf
 
 {% include "_nfs-client.sh" %}
 
