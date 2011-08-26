@@ -51,7 +51,7 @@ make install
 update-rc.d nginx enable 2 3 4 5
 
 # install custom config
-cp /home/$USERNAME/cloud-commander/newsapps/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+install_file newsapps /etc/nginx/nginx.conf
 
 # start it!
 service nginx start

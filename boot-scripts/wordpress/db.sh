@@ -1,9 +1,5 @@
 {%extends 'wordpress/base.sh' %}
 
-# we have to upgrade the kernel because the out of the box kernel
-# on this particular ami ubuntu maverick doesn't support nfs. We'll
-# do our standard setup without reloading the nfs config, then reboot.
-
 {% block install %}
 # install some basic stuff
 DEBIAN_FRONTEND='noninteractive' \
@@ -12,7 +8,7 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
         build-essential \
         mysql-server
 
-# Needs a reboot -
+# Install NFS server
 {% include "_nfs-server.sh" %}
 
 # MySQL configuration
@@ -34,6 +30,3 @@ echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;" |mysql
 
 {% endblock %}
 
-{% block finish %}
-reboot
-{% endblock %}

@@ -1,6 +1,5 @@
 # NFS server setup
 # Setup apps directories, export them through NFS
-# This stuff needs a new kernel, be sure to reboot!
 
 # Install packages
 DEBIAN_FRONTEND='noninteractive' \
@@ -10,9 +9,9 @@ apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
 
 # setup the directories for sharing, set permissions to the
 # wordpress user and apache group, make the permissions sticky
-mkdir /mnt/apps /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish
-chown $USERNAME:www-data /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish
-chmod ug+sw /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish
+mkdir /mnt/apps /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish /mnt/apps/nginx
+chown $USERNAME:www-data /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish /mnt/apps/nginx
+chmod ug+sw /mnt/apps/sites /mnt/apps/apache /mnt/apps/varnish /mnt/apps/nginx
 
 # Add our share to NFS exports
 echo '/mnt/apps 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exports

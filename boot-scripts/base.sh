@@ -5,14 +5,18 @@ USERNAME=ubuntu
 
 # Include functions
 {% include "lib.sh" %}
+echo "-------- Cloud Commander setup --------"
 
 # echo commands to the console and stop on errors
+echo 'Logging to /var/log/user-data.log ...'
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Make sure we have a locale defined
+echo 'Setting locale ...'
 export LANG="en_US.UTF-8"
 
 # change ubuntu user to custom username
+echo "Configuring '$USERNAME' user..."
 if [ $USERNAME -a $USERNAME != 'ubuntu' ]; then
     usermod -l $USERNAME -d /home/$USERNAME -m ubuntu
     groupmod -n $USERNAME ubuntu
@@ -22,13 +26,18 @@ if [ $USERNAME -a $USERNAME != 'ubuntu' ]; then
     sed "s/the ubuntu user/the $USERNAME user/g" </root/.ssh/authorized_keys >/root/.ssh/authorized_keys
 fi
 
+# make sure our user is a member of the web group
+usermod -G www-data $USERNAME
+
 {% if server.name -%}
 # configure hostname
+echo "Configuring hostname as {{server.name}}..."
 echo {{ server.name }} > /etc/hostname
 hostname {{ server.name }}
 {% endif -%}
 
 # update the software
+echo "Updating OS..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get -q update && apt-get -q upgrade -y
 
@@ -36,6 +45,8 @@ apt-get install python-setuptools
 
 # need an updated version of boto
 easy_install --upgrade boto
+
+echo "Setting up user environment..."
 
 # Carry over AWS keys for s3cmd
 echo "[default]
@@ -57,6 +68,7 @@ source /etc/profile
 apt-get -q install s3cmd
 
 # Pull down assets
+echo "Downloading assets..."
 ASSET_DIR="/home/$USERNAME/cloud-commander"
 s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://{{settings.asset_bucket}}/{{settings.cc_key}}-assets.tgz /home/$USERNAME/assets.tgz
 
@@ -115,6 +127,8 @@ echo "@reboot    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-c
 {% block install %}
 
 {% endblock %}
+
+echo "Cleaning up..."
 
 # Fix any perms that might have gotten messed up
 chown -Rf $USERNAME:$USERNAME /home/$USERNAME
