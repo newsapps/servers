@@ -41,7 +41,8 @@ echo "Updating OS..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get -q update && apt-get -q upgrade -y
 
-apt-get install python-setuptools
+# grab some basic utilities
+install_pkg build-essential python-setuptools python-dev zip git-core subversion unattended-upgrades mailutils
 
 # need an updated version of boto
 easy_install --upgrade boto

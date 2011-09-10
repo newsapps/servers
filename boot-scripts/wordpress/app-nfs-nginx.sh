@@ -4,8 +4,6 @@
 # install some basic stuff
 DEBIAN_FRONTEND='noninteractive' \
 apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
-        zip git-core subversion unattended-upgrades \
-        build-essential \
         php5 php5-mysql php5-gd php5-fpm php-pear php-apc php5-curl php5-memcache
 
 # Setup memcached

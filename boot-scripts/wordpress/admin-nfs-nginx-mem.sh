@@ -2,11 +2,9 @@
 
 {% block install %}
 # install some basic stuff
-DEBIAN_FRONTEND='noninteractive' \
-apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
+install_pkg \
         php5 php5-mysql php5-gd php5-fpm php-pear php-apc php5-curl php5-memcache \
-        mysql-client \
-        postfix
+        mysql-client
 
 # include the script to build nginx from source
 {% include "_nginx.sh" %}
@@ -17,8 +15,10 @@ install_file newsapps /etc/nginx/nginx.conf
 # Install php-fpm config
 install_file wordpress /etc/php5/fpm/pool.d/www.conf
 
-{% include "_nfs-client.sh" %}
+{% include "_nfs-server.sh" %}
 
 {% include "_syslog-server.sh" %}
+
+{% include "_memcached.sh" %}
 
 {% endblock %}

@@ -1,4 +1,4 @@
-{%extends 'wordpress/base.sh' %}
+{%extends 'newsapps/base.sh' %}
 
 {% block install %}
 

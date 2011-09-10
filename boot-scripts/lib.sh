@@ -13,8 +13,8 @@ function install_file {
 
 # install_pkgs $pkg_name
 function install_pkg {
-    echo "Installing packages $1"
+    echo "Installing packages $*"
     DEBIAN_FRONTEND='noninteractive' \
     apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
-            $1
+            $*
 }
