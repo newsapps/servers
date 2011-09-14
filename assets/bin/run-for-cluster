@@ -5,6 +5,8 @@ import sys
 import os
 import subprocess
 import argparse
+import getpass
+import time
 
 def get_servers(filters, access_key=None, secret_key=None):
 
@@ -36,11 +38,15 @@ if __name__ == '__main__':
                         help="Your AWS access key. Defaults to AWS_ACCESS_KEY_ID environment variable.")
     parser.add_argument("-s", "--secret-key", dest="secret_key",
                         help="Your AWS secret key. Defaults to AWS_SECRET_ACCESS_KEY environment variable.")
+    parser.add_argument("-i", "--identity-file", dest="identity_file",
+                        help="Your ssh private key file needed to connect to the other cluster instances.")
 
     parser.add_argument("-c", "--cluster", dest="cluster",
                         help="Cluster to target. Defaults to CLUSTER environment variable.")
     parser.add_argument("-t", "--type", dest="server_type",
                         help="Server type to target. Defaults to all servers.")
+    parser.add_argument("-u", "--username", dest="username",
+                        help="User name to connect with.")
 
     parser.add_argument("command",
                         help="Shell command to run on targeted servers.")
@@ -60,6 +66,19 @@ if __name__ == '__main__':
 
     f.update({'instance-state-name':'running'})
 
+    if args.identity_file:
+        identity_file = args.identity_file
+    elif os.getenv('PRIVATE_KEY'):
+        identity_file = os.getenv('PRIVATE_KEY')
+    else:
+        parser.error("I need an identity file.")
+        exit()
+
+    if args.username:
+        username = args.username
+    else:
+        username = getpass.getuser()
+
     try:
         if args.access_key and args.secret_key:
             servers = get_servers(f, access_key=args.access_key,
@@ -69,6 +88,24 @@ if __name__ == '__main__':
     except Exception as e:
         parser.error(e)
 
+    processes = dict()
     for s in servers:
-        command = "ssh -o \"StrictHostKeyChecking no\" %s '%s'" % (s['public_dns_name'], args.command)
-        subprocess.call(command, shell=True)
+        command = ["ssh",
+                "-o", "StrictHostKeyChecking no",
+                "-i", identity_file,
+                "-l", username,
+                s['public_dns_name'], args.command]
+        processes[s['tags']['Name']] = subprocess.Popen(command, stdout=subprocess.PIPE)
+
+    while True:
+
+        if len(processes) is 0: break
+
+        for name, p in processes.iteritems():
+            if p.poll() is not None:
+                print( name + " finished:" )
+                print( p.stdout.read() )
+                del processes[name]
+                break
+
+        time.sleep(1)
