@@ -14,8 +14,7 @@ tags {{server.cloudkick_tags}}
 name {{server.name}}" > /etc/cloudkick.conf
 
 # Install the monitor
-DEBIAN_FRONTEND='noninteractive' \
-apt-get -q -y -o Dpkg::Options::='--force-confnew' install cloudkick-agent
+install_pkg cloudkick-agent
 
 # Install plugins
 git clone https://github.com/cloudkick/agent-plugins.git /user/lib/cloudkick-agent/plugins

@@ -119,12 +119,6 @@ fi
 {% include "_cloudkick.sh" %}
 {% endif -%}
 
-{% if server.cluster -%}
-# make sure our hosts file is always up to date
-echo "@hourly    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-cluster" > /etc/cron.d/cloud-commander
-echo "@reboot    /etc/profile.d/cloud-commander.sh && /usr/local/bin/hosts-for-cluster" >> /etc/cron.d/cloud-commander
-{% endif -%}
-
 {% block install %}
 
 {% endblock %}
