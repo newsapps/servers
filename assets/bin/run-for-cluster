@@ -95,16 +95,24 @@ if __name__ == '__main__':
                 "-i", identity_file,
                 "-l", username,
                 s['public_dns_name'], args.command]
-        processes[s['tags']['Name']] = subprocess.Popen(command, stdout=subprocess.PIPE)
+        processes[s['tags']['Name']] = subprocess.Popen(
+                                            command,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE)
 
     while True:
 
         if len(processes) is 0: break
 
         for name, p in processes.iteritems():
-            if p.poll() is not None:
+            if p.poll() is 0:
                 print( name + " finished:" )
                 print( p.stdout.read() )
+                del processes[name]
+                break
+            elif p.poll() > 0:
+                print( name + " failed:" )
+                print( p.stderr.read() )
                 del processes[name]
                 break
 

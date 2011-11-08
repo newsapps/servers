@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import boto
+import sys
+import os
+import argparse
+
+from datetime import datetime, timedelta
+from pprint import pprint
+
+if __name__ == '__main__':
+    commands_description = "Snapshot EBS volumes and delete old snapshots. Run once a day. Keeps snapshots from last 7 days, from last 4 Sundays and from the first Sunday of the last 6 months. Keeps 17 snapshots per EBS."
+
+    parser = argparse.ArgumentParser(description=commands_description)
+    parser.add_argument("-k", "--access-key", dest="access_key",
+                        help="Your AWS access key. Defaults to AWS_ACCESS_KEY_ID environment variable.")
+    parser.add_argument("-s", "--secret-key", dest="secret_key",
+                        help="Your AWS secret key. Defaults to AWS_SECRET_ACCESS_KEY environment variable.")
+
+    parser.add_argument("--pretend", dest="pretend", action='store_true',
+                        help="Display what would happen, just don't do it.")
+    parser.add_argument("--silent", dest="silent", action='store_true',
+                        help="Don't display anything.")
+
+    parser.add_argument("volume_id", nargs="+",
+                        help="IDs of the EBS volumes you want to snapshot.")
+
+    args = parser.parse_args()
+
+    if args.pretend and args.silent:
+        parser.error("Stop sending me mixed signals.")
+
+    if args.access_key and args.secret_key:
+        conn = boto.connect_ec2(args.access_key, args.secret_key)
+    else:
+        conn = boto.connect_ec2()
+
+    snapshots = []
+    for id in args.volume_id:
+        # Get all the existing snapshots. We need to figure out which ones to delete.
+        snapshots.extend(conn.get_all_snapshots(filters={ 'volume-id': args.volume_id }))
+
+        # Create a new snapshot for each of our volumes.
+        if not args.silent:
+            print("Starting snapshot for %s..." % id)
+        if not args.pretend:
+            conn.create_snapshot(id)
+
+    today = datetime.utcnow()
+
+    for s in snapshots:
+        snapshot_date = datetime.strptime(s.start_time,
+                '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        if snapshot_date.weekday() == 6 and snapshot_date.day < 8 and today - timedelta(weeks=6*4) < snapshot_date :
+            if not args.silent:
+                print("%s is a monthly backup of %s. Keep it for six months." % (s.id,s.volume_id))
+        elif snapshot_date.weekday() == 6 and today - timedelta(weeks=4) < snapshot_date:
+            if not args.silent:
+                print("%s is a weekly backup of %s. Keep it for a month." % (s.id,s.volume_id))
+        elif today - timedelta(days=7) <= snapshot_date:
+            if not args.silent:
+                print("%s is a daily backup of %s. Keep it for a week." % (s.id,s.volume_id))
+        else:
+            if not args.silent:
+                print("%s is an old backup of %s, delete it." % (s.id,s.volume_id))
+            if not args.pretend:
+                conn.delete_snapshot(s.id)
+
