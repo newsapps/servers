@@ -22,6 +22,9 @@ if __name__ == '__main__':
     parser.add_argument("--silent", dest="silent", action='store_true',
                         help="Don't display anything.")
 
+    parser.add_argument("--no-snapshot", dest="do_snapshot", action='store_false',
+                        help="Don't perform the snapshot, just clean up old snapshots.")
+
     parser.add_argument("volume_id", nargs="+",
                         help="IDs of the EBS volumes you want to snapshot.")
 
@@ -35,16 +38,20 @@ if __name__ == '__main__':
     else:
         conn = boto.connect_ec2()
 
-    snapshots = []
-    for id in args.volume_id:
-        # Get all the existing snapshots. We need to figure out which ones to delete.
-        snapshots.extend(conn.get_all_snapshots(filters={ 'volume-id': args.volume_id }))
+        snapshots = []
+        for id in args.volume_id:
+            # Get all the existing snapshots. We need to figure out which ones to delete.
+            snapshots.extend(conn.get_all_snapshots(filters={ 'volume-id': args.volume_id }))
 
-        # Create a new snapshot for each of our volumes.
-        if not args.silent:
-            print("Starting snapshot for %s..." % id)
-        if not args.pretend:
-            conn.create_snapshot(id)
+            # Should we do the actual snapshots?
+            if args.do_snapshot:
+                # Create a new snapshot for each of our volumes.
+                if not args.silent:
+                    print("Starting snapshot for %s..." % id)
+                if not args.pretend:
+                    conn.create_snapshot(id)
+            elif not args.silent:
+                print("Skipping snapshot for %s..." % id)
 
     today = datetime.utcnow()
 
