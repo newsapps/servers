@@ -2,8 +2,7 @@
 # Setup apps directories, export them through NFS
 
 # Install packages
-install_pkg portmap nfs-common nfs-kernel-server \
-            linux-image-virtual
+install_pkg portmap nfs-common nfs-kernel-server
 
 # setup a log, temp and site directory in ephemeral storage
 mkdir /mnt/apps
@@ -26,7 +25,7 @@ ln -s /mnt/apps/nginx /home/$USERNAME/nginx
 mkdir /mnt/media
 
 # Add our share to NFS exports
-echo '/mnt/media 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exports
+echo '/mnt/apps 10.0.0.0/8(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exports
 
 # Fix for NFSv4 that's sometimes needed for proper permissions
 sed s/^NEED_IDMAPD=$/NEED_IDMAPD=yes/g /etc/default/nfs-common >/etc/default/nfs-common.new

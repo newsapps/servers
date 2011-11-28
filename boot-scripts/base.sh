@@ -42,7 +42,9 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -q update && apt-get -q upgrade -y
 
 # grab some basic utilities
-install_pkg build-essential python-setuptools python-dev zip git-core subversion unattended-upgrades mailutils
+install_pkg build-essential python-setuptools python-dev zip \
+    git-core subversion unattended-upgrades mailutils \
+    mdadm xfsprogs
 
 # need an updated version of boto
 easy_install --upgrade boto
@@ -114,6 +116,16 @@ fi
 
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
+
+# install ec2-consistent-snapshot
+# http://aws.amazon.com/articles/Amazon-EC2/1663
+codename=$(lsb_release -cs)
+echo "deb http://ppa.launchpad.net/alestic/ppa/ubuntu $codename main"|
+  sudo tee /etc/apt/sources.list.d/alestic-ppa.list    
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BE09C571
+sudo apt-get update
+sudo apt-get install -y ec2-consistent-snapshot
+sudo PERL_MM_USE_DEFAULT=1 cpan Net::Amazon::EC2
 
 {% if settings.cloudkick_oauth_key -%}
 {% include "_cloudkick.sh" %}
