@@ -9,15 +9,10 @@ install_pkg \
 # include the script to build nginx from source
 {% include "_nginx.sh" %}
 
-# Install nginx config
-install_file newsapps /etc/nginx/nginx.conf
-
 # Install php-fpm config
 install_file wordpress /etc/php5/fpm/pool.d/www.conf
 
 {% include "_nfs-server.sh" %}
-
-{% include "_syslog-server.sh" %}
 
 {% include "_memcached.sh" %}
 
