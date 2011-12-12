@@ -9,7 +9,7 @@ install_pkg php5 php5-mysql php5-gd php5-fpm php-pear php-apc php5-curl php5-mem
 {% include "_nginx.sh" %}
 
 # Setup memcached
-{% include "_memcache.sh" %}
+{% include "_memcached.sh" %}
 
 # Install php-fpm config
 install_file wordpress /etc/php5/fpm/pool.d/www.conf

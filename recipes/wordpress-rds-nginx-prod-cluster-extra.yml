@@ -1,13 +1,11 @@
 server:
-    - type:           'app'
-      name:           'app1.wp'
-      hosts:          'app1'
-      script:         'wordpress/app-nginx.sh'
+    - type:           'admin'
+      name:           'admin.wp'
+      hosts:          'admin, log, mail, cron, nfs'
+      script:         'wordpress/admin-nfs-nginx.sh'
       size:           'large'
       os:             'ubuntu'
       version:        '11.04'
       arch:           '64bit'
       security_group: 'wp-production'
-      cluster:        'wp-production'
-      cloudkick_tags: 'nginx, large, production, wordpress'
-
+      cluster:        'wp-production-b'
