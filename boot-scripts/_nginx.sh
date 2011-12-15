@@ -1,5 +1,7 @@
 # Use PPA for nginx
-sudo add-apt-repository ppa:nginx/stable
+add-apt-repository ppa:nginx/stable
+
+apt-get update
 
 # install some basic stuff
 install_pkg libpcre3-dev libxml2-dev libxslt1-dev libgd2-xpm-dev libgeoip-dev \

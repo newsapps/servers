@@ -8,4 +8,4 @@ server:
       version:        '11.04'
       arch:           '64bit'
       security_group: 'wp-production'
-      cluster:        'wp-production-b'
+      cluster:        'wp-production'
