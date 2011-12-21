@@ -1,9 +1,9 @@
 server:
     - type:           'admin'
-      name:           'admin.wp'
-      hosts:          'admin, log, mail, cron, nfs'
-      script:         'wordpress/admin-nfs-nginx.sh'
-      size:           'large'
+      name:           'ftp.wp'
+      hosts:          'ftp'
+      script:         'wordpress/admin-nginx.sh'
+      size:           'micro'
       os:             'ubuntu'
       version:        '11.04'
       arch:           '64bit'

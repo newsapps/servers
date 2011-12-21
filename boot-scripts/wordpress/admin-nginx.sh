@@ -14,6 +14,4 @@ install_file wordpress /etc/php5/fpm/pool.d/www.conf
 
 {% include "_nfs-client.sh" %}
 
-{% include "_syslog-server.sh" %}
-
 {% endblock %}

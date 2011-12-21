@@ -14,7 +14,7 @@ mkdir /mnt/localapps/apache
 mkdir /mnt/localapps/varnish
 mkdir /mnt/localapps/media
 mkdir /mnt/tmp
-chmod ugo+rwx -r /mnt/tmp /mnt/localapps
+chmod -R ugo+rwx /mnt/tmp /mnt/localapps
 
 # shortcuts in the home directory
 ln -s /mnt/localapps/logs /home/$USERNAME/logs
@@ -26,7 +26,7 @@ ln -s /mnt/localapps/media /home/$USERNAME/media
 
 # Configure NFS and setup a mount point for media
 mkdir /mnt/apps
-echo 'nfs:/mnt/apps	/mnt/apps	nfs	defaults' >> /etc/fstab
+echo 'nfs:/mnt/apps	/mnt/apps	nfs	defaults,nobootwait,nfsvers=3' >> /etc/fstab
 sed s/^NEED_IDMAPD=$/NEED_IDMAPD=yes/g /etc/default/nfs-common >/etc/default/nfs-common.new
 mv /etc/default/nfs-common.new /etc/default/nfs-common
 service idmapd start
