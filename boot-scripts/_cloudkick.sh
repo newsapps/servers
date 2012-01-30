@@ -18,6 +18,4 @@ install_pkg cloudkick-agent
 
 # Install plugins
 mkdir /usr/lib/cloudkick-agent
-git clone https://github.com/cloudkick/agent-plugins.git /usr/lib/cloudkick-agent/plugins
-
-cp -Rf $ASSET_DIR/newsapps/usr/lib/cloudkick-agent/plugins/* /usr/lib/cloudkick-agent/plugins/
+git clone https://github.com/newsapps/agent-plugins.git /usr/lib/cloudkick-agent/plugins
