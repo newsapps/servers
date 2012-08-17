@@ -2,8 +2,6 @@
 
 {% block install %}
 
-{% include '_syslog-client.sh' %}
-
 {% include '_nfs-client.sh' %}
 
 {% include '_apache-python.sh' %}

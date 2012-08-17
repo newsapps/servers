@@ -20,14 +20,13 @@ echo "Configuring '$USERNAME' user..."
 if [ $USERNAME -a $USERNAME != 'ubuntu' ]; then
     usermod -l $USERNAME -d /home/$USERNAME -m ubuntu
     groupmod -n $USERNAME ubuntu
-    sed "s/ubuntu/$USERNAME/g" </etc/sudoers >/etc/sudoers.new
-    mv /etc/sudoers.new /etc/sudoers
-    chmod 440 /etc/sudoers
-    sed "s/the ubuntu user/the $USERNAME user/g" </root/.ssh/authorized_keys >/root/.ssh/authorized_keys
-fi
 
-# make sure our user is a member of the web group
-usermod -G www-data $USERNAME
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/90-cloudimg-$USERNAME
+    chmod 0440 /etc/sudoers.d/90-cloudimg-$USERNAME
+    rm /etc/sudoers.d/90-cloudimg-ubuntu
+
+    sed "s/ubuntu/$USERNAME/g" </root/.ssh/authorized_keys >/root/.ssh/authorized_keys
+fi
 
 {% if server.name -%}
 # configure hostname
@@ -44,7 +43,10 @@ apt-get -q update && apt-get -q upgrade -y
 # grab some basic utilities
 install_pkg build-essential python-setuptools python-dev zip \
     git-core subversion unattended-upgrades mailutils \
-    mdadm xfsprogs
+    mdadm xfsprogs s3cmd python-pip python-virtualenv \
+    virtualenvwrapper libxml2-dev libxslt-dev libgeos-dev \
+    libpq-dev postgresql-client mysql-client libmysqlclient-dev \
+    runit
 
 # need an updated version of boto
 easy_install --upgrade boto
@@ -67,15 +69,12 @@ export CLUSTER={{server.cluster}}
 " > /etc/profile.d/cloud-commander.sh
 source /etc/profile
 
-# install s3cmd
-apt-get -q install s3cmd
-
 # Pull down assets
 echo "Downloading assets..."
 ASSET_DIR="/home/$USERNAME/cloud-commander"
 s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://{{settings.asset_bucket}}/{{settings.cc_key}}-assets.tgz /home/$USERNAME/assets.tgz
 
-cd /home/$USERNAME 
+cd /home/$USERNAME
 tar -zxf assets.tgz
 
 # fix asset permissions
@@ -83,12 +82,7 @@ chown -Rf root:root $ASSET_DIR
 chmod -Rf 755 $ASSET_DIR
 
 # install scripts
-if [ -d $ASSET_DIR/bin ]; then
-    if [ ! -d /usr/local/bin ]; then
-        mkdir /usr/local/bin
-    fi
-    cp $ASSET_DIR/bin/* /usr/local/bin
-fi
+cp $ASSET_DIR/bin/* /usr/local/bin
 
 # load private keys
 cp $ASSET_DIR/*.pem /home/$USERNAME/.ssh/
@@ -103,29 +97,19 @@ if [ -f $ASSET_DIR/known_hosts ]; then
     cp $ASSET_DIR/known_hosts /home/$USERNAME/.ssh/known_hosts
 fi
 
+# load ssh config
+if [ -f $ASSET_DIR/ssh_config ]; then
+    cp $ASSET_DIR/ssh_config /home/$USERNAME/.ssh/config
+fi
+
 # make sure ssh is set to start at boot
 update-rc.d ssh enable 2345
 
 # fix permissions in ssh folder
 chmod -Rf go-rwx /home/$USERNAME/.ssh
 
-# setup private key to be used by default for ssh connections
-if [ -f /home/$USERNAME/.ssh/{{settings.key_pair}}.pem ]; then
-    echo "IdentityFile /home/$USERNAME/.ssh/{{settings.key_pair}}.pem" > /home/$USERNAME/.ssh/config
-fi
-
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
-
-# install ec2-consistent-snapshot
-# http://aws.amazon.com/articles/Amazon-EC2/1663
-codename=$(lsb_release -cs)
-echo "deb http://ppa.launchpad.net/alestic/ppa/ubuntu $codename main"|
-  sudo tee /etc/apt/sources.list.d/alestic-ppa.list    
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BE09C571
-sudo apt-get update
-sudo apt-get install -y ec2-consistent-snapshot
-sudo PERL_MM_USE_DEFAULT=1 cpan Net::Amazon::EC2
 
 {% if settings.cloudkick_oauth_key -%}
 {% include "_cloudkick.sh" %}
@@ -143,6 +127,9 @@ chown -Rf $USERNAME:$USERNAME /home/$USERNAME
 # fix asset permissions
 chown -Rf root:root $ASSET_DIR
 chmod -Rf 755 $ASSET_DIR
+
+# make sure our user is a member of the web group
+usermod -a -G www-data $USERNAME
 
 # Update CC status - remove instance booting semaphore from s3
 s3cmd del --config=/home/$USERNAME/.s3cfg {{settings.assets_s3_url}}`ec2metadata --instance-id`._cc_

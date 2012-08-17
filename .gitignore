@@ -1,4 +1,6 @@
-*.pem
-authorized_keys
-known_hosts
+assets/*.pem
+assets/authorized_keys
+assets/known_hosts
+assets/ssh_config
 config.yml
+*.pyc
