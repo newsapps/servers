@@ -46,7 +46,7 @@ install_pkg build-essential python-setuptools python-dev zip \
     mdadm xfsprogs s3cmd python-pip python-virtualenv \
     virtualenvwrapper libxml2-dev libxslt-dev libgeos-dev \
     libpq-dev postgresql-client mysql-client libmysqlclient-dev \
-    runit
+    runit ntp
 
 # need an updated version of boto
 easy_install --upgrade boto
@@ -134,5 +134,6 @@ usermod -a -G www-data $USERNAME
 # Update CC status - remove instance booting semaphore from s3
 s3cmd del --config=/home/$USERNAME/.s3cfg {{settings.assets_s3_url}}`ec2metadata --instance-id`._cc_
 
-{% block finish %}{% endblock %}
-
+{% block finish %}
+reboot
+{% endblock %}
