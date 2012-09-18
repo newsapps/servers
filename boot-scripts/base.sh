@@ -42,8 +42,8 @@ apt-get -q update && apt-get -q upgrade -y
 
 # grab some basic utilities
 install_pkg build-essential python-setuptools python-dev zip \
-    git-core subversion unattended-upgrades mailutils \
-    mdadm xfsprogs s3cmd python-pip python-virtualenv \
+    git-core subversion unattended-upgrades mailutils libevent-dev \
+    mdadm xfsprogs s3cmd python-pip python-virtualenv python-all-dev \
     virtualenvwrapper libxml2-dev libxslt-dev libgeos-dev \
     libpq-dev postgresql-client mysql-client libmysqlclient-dev \
     runit ntp
@@ -59,13 +59,17 @@ access_key = {{settings.access_key}}
 secret_key = {{settings.secret_key}}" > /home/$USERNAME/.s3cfg
 
 # Setup profile stuff
-echo "export SECURITY_GROUP={{settings.security_group}}
+echo "{% if server.cluster -%}
+export CLUSTER={{server.cluster}}
+{% endif -%}
+{% if server.security_group -%}
+export SECURITY_GROUP={{server.security_group}}
+{% else -%}
+export SECURITY_GROUP={{settings.security_group}}
+{% endif -%}
 export PRIVATE_KEY=/home/$USERNAME/.ssh/{{settings.key_pair}}.pem
 export AWS_ACCESS_KEY_ID={{settings.access_key}}
 export AWS_SECRET_ACCESS_KEY={{settings.secret_key}}
-{% if server.cluster -%}
-export CLUSTER={{server.cluster}}
-{% endif -%}
 " > /etc/profile.d/cloud-commander.sh
 source /etc/profile
 
