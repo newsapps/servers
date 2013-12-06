@@ -1,10 +1,29 @@
 #!/bin/bash -x
-{% block start %}
-USERNAME=ubuntu
-{% endblock %}
+
+USERNAME=newsapps
+
 
 # Include functions
-{% include "lib.sh" %}
+# Some useful bash functions
+
+# install_file $from_bundle $file_path
+# ex:
+#   install_file newsapps /etc/memcached.conf
+#
+function install_file {
+    echo "Installing '$2' from assets"
+    cp /home/$USERNAME/cloud-commander/$1$2 $2
+    chown root:root $2
+    chmod 644 $2
+}
+
+# install_pkgs $pkg_name
+function install_pkg {
+    echo "Installing packages $*"
+    DEBIAN_FRONTEND='noninteractive' \
+    apt-get -q -y -o Dpkg::Options::='--force-confnew' install \
+            $*
+}
 
 # echo commands to the console and stop on errors
 echo 'Logging to /var/log/user-data.log ...'
@@ -27,13 +46,10 @@ if [ $USERNAME -a $USERNAME != 'ubuntu' ]; then
     sed "s/ubuntu/$USERNAME/g" </root/.ssh/authorized_keys >/root/.ssh/authorized_keys
 fi
 
-{% if SERVER_NAME -%}
 # configure hostname
-echo "Configuring hostname as {{SERVER_NAME}}..."
-echo {{ SERVER_NAME }} > /etc/hostname
-hostname {{ SERVER_NAME }}
-{% endif -%}
-
+echo "Configuring hostname as test..."
+echo test > /etc/hostname
+hostname test
 # update the software
 echo "Updating OS..."
 export DEBIAN_FRONTEND=noninteractive
@@ -61,28 +77,21 @@ echo "Setting up user environment..."
 
 # Carry over AWS keys for s3cmd
 echo "[default]
-access_key = {{ACCESS_KEY}}
-secret_key = {{SECRET_KEY}}" > /home/$USERNAME/.s3cfg
+access_key = 
+secret_key = " > /home/$USERNAME/.s3cfg
 
 # Setup profile stuff
-echo "{% if CLUSTER -%}
-export CLUSTER={{CLUSTER}}
-{% endif -%}
-{% if SECURITY_GROUP -%}
-export SECURITY_GROUP={{SECURITY_GROUP}}
-{% else -%}
-export SECURITY_GROUP={{SECURITY_GROUP}}
-{% endif -%}
-export PRIVATE_KEY=/home/$USERNAME/.ssh/{{KEY_PAIR}}.pem
-export AWS_ACCESS_KEY_ID={{ACCESS_KEY}}
-export AWS_SECRET_ACCESS_KEY={{SECRET_KEY}}
+echo "export SECURITY_GROUP=
+export PRIVATE_KEY=/home/$USERNAME/.ssh/.pem
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
 " > /etc/profile.d/cloud-commander.sh
 source /etc/profile
 
 # Pull down assets
 echo "Downloading assets..."
 ASSET_DIR="/home/$USERNAME/cloud-commander"
-s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://{{ASSET_BUCKET}}/{{ASSET_KEY}} /home/$USERNAME/assets.tgz
+s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://ct-server-assets/ /home/$USERNAME/assets.tgz
 
 cd /home/$USERNAME
 tar -zxf assets.tgz
@@ -125,13 +134,9 @@ chmod -Rf go-rwx /home/$USERNAME/.ssh
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
 
-{% if CLOUDKICK_OAUTH_KEY -%}
-{% include "_cloudkick.sh" %}
-{% endif -%}
 
-{% block install %}
 
-{% endblock %}
+
 
 echo "Cleaning up..."
 
@@ -146,8 +151,7 @@ chmod -Rf 755 $ASSET_DIR
 usermod -a -G www-data $USERNAME
 
 # Update CC status - remove instance booting semaphore from s3
-s3cmd del --config=/home/$USERNAME/.s3cfg s3://{{ASSET_BUCKET}}/`ec2metadata --instance-id`._cc_
+s3cmd del --config=/home/$USERNAME/.s3cfg s3://ct-server-assets/`ec2metadata --instance-id`._cc_
 
-{% block finish %}
+
 reboot
-{% endblock %}

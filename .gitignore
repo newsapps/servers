@@ -4,3 +4,4 @@ assets/known_hosts
 assets/ssh_config
 config.yml
 *.pyc
+config_local.py

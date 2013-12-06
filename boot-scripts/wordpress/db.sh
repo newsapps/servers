@@ -17,11 +17,11 @@ mv /etc/mysql/my.cnf.new /etc/mysql/my.cnf
 #service mysql reload
 
 # setup users for mysql
-{% if settings.root_db_password -%}
-echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY '{{settings.root_db_password}}' WITH GRANT OPTION;" |mysql
+{% if ROOT_DB_PASSWORD -%}
+echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY '{{ROOT_DB_PASSWORD}}' WITH GRANT OPTION;" |mysql
 
 # set db root password
-mysqladmin -u root password '{{settings.root_db_password}}'
+mysqladmin -u root password '{{ROOT_DB_PASSWORD}}'
 {% else -%}
 echo "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;" |mysql
 {% endif -%}

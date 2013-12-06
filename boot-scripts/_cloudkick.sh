@@ -6,10 +6,10 @@ echo 'deb http://packages.cloudkick.com/ubuntu lucid main' > /etc/apt/sources.li
 apt-get update
 
 # Create the config file
-echo "oauth_key {{settings.cloudkick_oauth_key}}
-oauth_secret {{settings.cloudkick_oauth_secret}}
-tags {{server.cloudkick_tags}}
-name {{server.name}}" > /etc/cloudkick.conf
+echo "oauth_key {{CLOUDKICK_OAUTH_KEY}}
+oauth_secret {{CLOUDKICK_OAUTH_SECRET}}
+tags {{CLOUDKICK_TAGS}}
+name {{SERVER_NAME}}" > /etc/cloudkick.conf
 
 # Install the common files
 apt-get install cloudkick-config
