@@ -50,3 +50,17 @@ server:
       cluster:        'django-production'
       cloudkick_tags: 'production, web, django, gunicorn, nginx'
       zone:           'us-east-1a'
+
+    - type:           'worker'
+      name:           'worker1.django'
+      hosts:          'worker1'
+      script:         'newsapps/base.sh'
+      size:           'small'
+      os:             'ubuntu'
+      version:        '12.04'
+      arch:           '64bit'
+      security_group: 'django-production'
+      cluster:        'django-production'
+      cloudkick_tags: 'production, worker'
+      zone:           'us-east-1d'
+

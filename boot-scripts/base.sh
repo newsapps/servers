@@ -42,14 +42,21 @@ apt-get -q update && apt-get -q upgrade -y
 
 # grab some basic utilities
 install_pkg build-essential python-setuptools python-dev zip \
-    git-core subversion unattended-upgrades mailutils libevent-dev \
+    git-core subversion mercurial unattended-upgrades mailutils \
+    libevent-dev \
     mdadm xfsprogs s3cmd python-pip python-virtualenv python-all-dev \
     virtualenvwrapper libxml2-dev libxslt-dev libgeos-dev \
     libpq-dev postgresql-client mysql-client libmysqlclient-dev \
-    runit ntp
+    runit proj libfreetype6-dev libjpeg-dev zlib1g-dev \
+    libgdal1-dev
 
 # need an updated version of boto
 easy_install --upgrade boto
+
+# Make PIL build correctly
+sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
+sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
 
 echo "Setting up user environment..."
 
@@ -108,6 +115,10 @@ fi
 
 # make sure ssh is set to start at boot
 update-rc.d ssh enable 2345
+
+# make sure our clocks are always on time
+echo 'ntpdate ntp.ubuntu.com' > /etc/cron.daily/ntpdate
+chmod +x /etc/cron.daily/ntpdate
 
 # fix permissions in ssh folder
 chmod -Rf go-rwx /home/$USERNAME/.ssh
