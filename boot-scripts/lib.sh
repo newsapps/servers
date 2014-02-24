@@ -6,7 +6,7 @@
 #
 function install_file {
     echo "Installing '$2' from assets"
-    cp /home/$USERNAME/cloud-commander/$1$2 $2
+    cp /home/$USERNAME/assets/$1$2 $2
     chown root:root $2
     chmod 644 $2
 }

@@ -76,12 +76,12 @@ export SECURITY_GROUP={{SECURITY_GROUP}}
 export PRIVATE_KEY=/home/$USERNAME/.ssh/{{KEY_PAIR}}.pem
 export AWS_ACCESS_KEY_ID={{ACCESS_KEY}}
 export AWS_SECRET_ACCESS_KEY={{SECRET_KEY}}
-" > /etc/profile.d/cloud-commander.sh
+" > /etc/profile.d/aws-creds.sh
 source /etc/profile
 
 # Pull down assets
 echo "Downloading assets..."
-ASSET_DIR="/home/$USERNAME/cloud-commander"
+ASSET_DIR="/home/$USERNAME/assets"
 s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://{{ASSET_BUCKET}}/{{ASSET_KEY}} /home/$USERNAME/assets.tgz
 
 cd /home/$USERNAME
@@ -124,6 +124,14 @@ chmod -Rf go-rwx /home/$USERNAME/.ssh
 
 # setup our local hosts file
 /usr/local/bin/hosts-for-cluster
+
+# setup logs
+mkdir /home/$USERNAME/logs
+chmod o+w /home/$USERNAME/logs
+
+install_file newsapps /etc/logrotate.d/newsapps.conf
+
+mkdir /home/$USERNAME/sites
 
 {% if CLOUDKICK_OAUTH_KEY -%}
 {% include "_cloudkick.sh" %}

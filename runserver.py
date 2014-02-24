@@ -61,6 +61,8 @@ if __name__ == '__main__':
                         help="Name this server")
     parser.add_argument("-c", "--cluster", dest="cluster",
                         help="Put server in a cluster")
+    parser.add_argument("--hosts", dest="hosts", default='',
+                        help="Comma-delimited list of hosts to assign to this server")
 
     parser.add_argument("--pretend", dest="pretend", action='store_true',
                         help="Output the build script and don't actually create the server.")
@@ -97,7 +99,7 @@ if __name__ == '__main__':
         string.ascii_uppercase + string.digits) for x in range(8))
     with io.BytesIO() as data_stream:
         with tarfile.open(fileobj=data_stream, mode='w:gz') as tarball:
-            tarball.add(PWD + '/assets')
+            tarball.add(PWD + '/assets', 'assets')
         data_stream.seek(0)
         s3_key.set_contents_from_file(data_stream)
 
@@ -108,7 +110,10 @@ if __name__ == '__main__':
 
     tags = {'Name': args.server_name}
     if args.cluster:
-        hosts = map(lambda x: x.strip(), args.hosts.split(','))
+        if args.hosts:
+            hosts = map(lambda x: x.strip(), args.hosts.split(','))
+        else:
+            hosts = list()
         if args.server_name not in hosts:
             hosts.insert(0, args.server_name)
         tags['Cluster'] = args.cluster
@@ -116,7 +121,7 @@ if __name__ == '__main__':
         tags['Type'] = config.SERVER_TYPES[args.build_script]
 
     if args.pretend:
-        col1 = 18
+        col1 = 25
         col2 = 30
         build_filename = 'build.sh'
         with open(build_filename, 'w') as fp:
