@@ -43,3 +43,48 @@ Here we have a simple python commandline script and a bunch of shell script temp
 All the build scripts are designed to use with Ubuntu AMIs. This rig would theoretically work with any image that loads and runs a shell script from the EC2 user-data.
 
 The build script is generated using Jinja2. `runserver.py` will load whatever variables are present in `config.py` and pass them in as context to whatever template is specified by the `-b` or `--build-script` flags.
+
+### `newsapps/base.sh`
+
+Build a server with the basics. Log in as the `newsapps` user. All newsapps script templates extend this.
+
+### `newsapps/app-nginx.sh`
+
+Build an nginx/python application server. This server is setup to handle applications deployed with our [deploy tools](https://github.com/newsapps/deploy-tools).
+
+### `newsapps/app-cache.sh`
+
+Build an apache/mod_wsgi application server with memcached. Includes NFS client. NFS client requires a server with the host `nfs` to be in the cluster.
+
+### `newsapps/app.sh`
+
+Build an apache/mod_wsgi application server. Includes NFS client. NFS client requires a server with the host `nfs` to be in the cluster.
+
+### `newsapps/cron.sh`
+
+Build a server for running crons and worker things. Includes NFS client, memcached and postfix. NFS client requires a server with the host `nfs` to be in the cluster.
+
+### `newsapps/db-nfs.sh`
+
+Build a postgres/NFS server. Be sure to label this with the `nfs` host (`--hosts nfs`).
+
+### `newsapps/kitchensink.sh`
+
+Build a full-stack server including postgres, apache/modwsgi, postfix, memcached.
+
+### `newsapps/lb.sh`
+
+Build a varnish server.
+
+## Assets
+
+The assets folder gets tarballed and uploaded to S3 so the boot scripts can pull it down. The boot scripts will look for `authorized_keys`, `known_hosts`, `ssh_config` and any files ending with `*.pem`. These files will be moved into `.ssh` and correctly permissioned. So you can have all ssh settings properly configured on first boot.
+
+All files in `assets/bin` will get copied into `/usr/local/bin` on the server and properly permissioned. There are already some handy scripts in there for working with clusters. The most useful is `hosts-for-cluster`. When run as root, `hosts-for-cluster` will update the machine's hosts file with the data stored in the AWS keys assigned to each server in the current cluster. Whenever you build a new server in an existing cluster, you will need to run `hosts-for-cluster` on each server. This feature allows your to use the simple host names that you assigned to your servers on build in your application. 
+
+The `newsapps` and `wordpress` folders in assets store customized configuration. The scripts use a function `install_file` to copy files over from these folders.
+
+    # install_file folder_name full_path
+    install_file newsapps /etc/nginx/nginx.conf
+
+This example will copy over the `nginx.conf` file from the newsapps folder.

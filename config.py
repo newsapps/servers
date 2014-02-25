@@ -4,7 +4,14 @@ IN = 'here'
 
 # Boot script template configs
 SERVER_TYPES = {
-    'newsapps/app-nginx.sh': 'app'
+    'newsapps/app-nginx.sh': 'app',
+    'newsapps/app-cache.sh': 'app',
+    'newsapps/app.sh': 'app',
+    'newsapps/cron.sh': 'worker',
+    'newsapps/db-nfs.sh': 'admin',
+    'newsapps/lb.sh': 'lb',
+    'newsapps/base.sh': 'none',
+    'newsapps/kitchensink.sh': 'none',
 }
 
 # Secrets should go in your config_local.py. Putting these here for reference.
