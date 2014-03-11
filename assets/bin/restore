@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Get all the runit services from another server
+sudo rsync -avp --exclude 'supervise' ${1}:/etc/service /etc/service
+# Get all the sites from another server
+rsync -avp ${1}:~/sites/ ~/sites/
+# Get all the nginx configs from another server
+rsync -avp ${1}:~/nginx/ ~/nginx/
+# Get all the virtualenvs from another server
+rsync -avp ${1}:~/.virtualenvs/ ~/.virtualenvs/
+# Get all the nginx cache from another server
+sudo rsync -avp ${1}:/mnt/nginx-cache /mnt/nginx-cache

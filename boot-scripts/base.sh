@@ -57,6 +57,9 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
 sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
 sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
 
+# Make old versions of GeoDjango work
+sudo ln -s /usr/lib/libgdal1.7.0.so /usr/lib/libgdal.so
+
 echo "Setting up user environment..."
 
 # Carry over AWS keys for s3cmd
