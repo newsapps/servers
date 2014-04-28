@@ -12,6 +12,7 @@ SERVER_TYPES = {
     'newsapps/lb.sh': 'lb',
     'newsapps/base.sh': 'none',
     'newsapps/kitchensink.sh': 'none',
+    'newsapps/archive-worker.sh': 'worker',
 }
 
 # Secrets should go in your config_local.py. Putting these here for reference.
