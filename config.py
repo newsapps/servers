@@ -20,6 +20,9 @@ ACCESS_KEY = 'aws access key id'
 SECRET_KEY = 'aws secret key'
 ASSET_BUCKET = 'bucket name here'
 
+# If you have a repo for secrets, it'll be cloned to ~/sites/secrets
+# SECRETS_REPO = 'git@github.com:example/secrets.git'
+
 # Load overrides from config_local.py
 try:
     from config_local import *

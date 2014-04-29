@@ -91,6 +91,7 @@ s3cmd get --config=/home/$USERNAME/.s3cfg --no-progress s3://{{ASSET_BUCKET}}/{{
 
 cd /home/$USERNAME
 tar -zxf assets.tgz
+rm assets.tgz
 
 # fix asset permissions
 chown -Rf root:root $ASSET_DIR
@@ -140,6 +141,10 @@ mkdir /home/$USERNAME/sites
 
 {% if CLOUDKICK_OAUTH_KEY -%}
 {% include "_cloudkick.sh" %}
+{% endif -%}
+
+{% if SECRETS_REPO -%}
+git clone {{ SECRETS_REPO }} /home/$USERNAME/sites/secrets
 {% endif -%}
 
 {% block install %}
