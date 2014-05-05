@@ -143,10 +143,6 @@ mkdir /home/$USERNAME/sites
 {% include "_cloudkick.sh" %}
 {% endif -%}
 
-{% if SECRETS_REPO -%}
-git clone {{ SECRETS_REPO }} /home/$USERNAME/sites/secrets
-{% endif -%}
-
 {% block install %}
 
 {% endblock %}
@@ -165,6 +161,10 @@ usermod -a -G www-data $USERNAME
 
 # Update CC status - remove instance booting semaphore from s3
 s3cmd del --config=/home/$USERNAME/.s3cfg s3://{{ASSET_BUCKET}}/`ec2metadata --instance-id`._cc_
+
+{% if SECRETS_REPO -%}
+sudo -u newsapps -i git clone {{ SECRETS_REPO }} /home/$USERNAME/sites/secrets
+{% endif -%}
 
 {% block finish %}
 reboot
