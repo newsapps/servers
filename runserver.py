@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import os
 
+from jinja2 import Environment, FileSystemLoader
+
 PWD = os.path.abspath(os.path.dirname(__file__))
 
-from jinja2 import Environment, FileSystemLoader
 env = Environment(
     loader=FileSystemLoader(PWD + '/boot-scripts'))
 
