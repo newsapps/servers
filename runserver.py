@@ -76,10 +76,10 @@ def render(template_name, template_context):
     return template.render(**template_context)
 
 
-def get_or_create_asset_bucket(bucket_name):
-    if s3.lookup(config.ASSET_BUCKET):
+def get_or_create_asset_bucket(s3, bucket_name):
+    try:
         bucket = s3.get_bucket(config.ASSET_BUCKET)
-    else:
+    except S3ResponseError:
         bucket = s3.create_bucket(config.ASSET_BUCKET)
 
     return bucket
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     import tarfile
     import boto.ec2
     import time
-    from boto.s3.connection import S3Connection
+    from boto.s3.connection import S3Connection, OrdinaryCallingFormat
     from boto.s3.key import Key
 
     parser = argparse.ArgumentParser(description='Build some Amazon EC2 servers.')
@@ -162,10 +162,11 @@ if __name__ == '__main__':
         ec2 = boto.ec2.connect_to_region(
             args.region, aws_access_key_id=args.access_key,
             aws_secret_access_key=args.secret_key)
-        s3 = S3Connection(args.access_key, args.secret_key)
+        s3 = S3Connection(args.access_key, args.secret_key,
+                calling_format=OrdinaryCallingFormat())
     else:
         ec2 = boto.ec2.connect_to_region(args.region)
-        s3 = S3Connection()
+        s3 = S3Connection(calling_format=OrdinaryCallingFormat())
 
     template_context = config.__dict__.copy()
     template_context['SERVER_NAME'] = args.server_name
@@ -173,7 +174,7 @@ if __name__ == '__main__':
     # store assets
     if not args.pretend:
         try:
-            bucket = get_or_create_asset_bucket(config.ASSET_BUCKET)
+            bucket = get_or_create_asset_bucket(s3, config.ASSET_BUCKET)
             asset_url, asset_key = upload_assets(bucket)
 
             template_context['ASSET_URL'] = asset_url
