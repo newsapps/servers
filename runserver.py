@@ -76,6 +76,28 @@ def render(template_name, template_dict):
     return template.render(**template_dict)
 
 
+def get_or_create_asset_bucket(bucket_name):
+    if s3.lookup(config.ASSET_BUCKET):
+        bucket = s3.get_bucket(config.ASSET_BUCKET)
+    else:
+        bucket = s3.create_bucket(config.ASSET_BUCKET)
+
+    return bucket
+
+def upload_assets(bucket):
+    s3_key = Key(bucket)
+    s3_key.key = "assets-%s.tgz" % ''.join(random.choice(
+        string.ascii_uppercase + string.digits) for x in range(8))
+
+    with io.BytesIO() as data_stream:
+        with tarfile.open(fileobj=data_stream, mode='w:gz') as tarball:
+            tarball.add(PWD + '/assets', 'assets')
+        data_stream.seek(0)
+        s3_key.set_contents_from_file(data_stream)
+
+    return s3_key.generate_url(600), s3_key.key
+
+
 if __name__ == '__main__':
     from clint.textui import puts, colored, indent, columns
     import argparse
@@ -145,12 +167,18 @@ if __name__ == '__main__':
         ec2 = boto.ec2.connect_to_region(args.region)
         s3 = S3Connection()
 
+    template_dict = config.__dict__.copy()
+    template_dict['SERVER_NAME'] = args.server_name
+
     # store assets
-    if s3.lookup(config.ASSET_BUCKET):
-        bucket = s3.get_bucket(config.ASSET_BUCKET)
-    else:
+    if not args.pretend:
         try:
-            bucket = s3.create_bucket(config.ASSET_BUCKET)
+            bucket = get_or_create_asset_bucket(config.ASSET_BUCKET)
+            asset_url, asset_key = upload_assets(bucket)
+
+            template_dict['ASSET_URL'] = asset_url
+            template_dict['ASSET_KEY'] = asset_key
+
         except S3ResponseError:
             msg = ("Unable to create bucket '{}'. Check that the "
                    "value of the ASSET_BUCKET setting is valid in the "
@@ -159,19 +187,6 @@ if __name__ == '__main__':
             sys.stderr.write(msg)
             sys.exit(1)
 
-    s3_key = Key(bucket)
-    s3_key.key = "assets-%s.tgz" % ''.join(random.choice(
-        string.ascii_uppercase + string.digits) for x in range(8))
-    with io.BytesIO() as data_stream:
-        with tarfile.open(fileobj=data_stream, mode='w:gz') as tarball:
-            tarball.add(PWD + '/assets', 'assets')
-        data_stream.seek(0)
-        s3_key.set_contents_from_file(data_stream)
-
-    template_dict = config.__dict__.copy()
-    template_dict['ASSET_URL'] = s3_key.generate_url(600)
-    template_dict['ASSET_KEY'] = s3_key.key
-    template_dict['SERVER_NAME'] = args.server_name
 
     tags = {'Name': args.server_name}
     if args.cluster:
