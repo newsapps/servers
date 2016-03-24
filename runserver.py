@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
+import sys
 
+from boto.exception import S3ResponseError
 from jinja2 import Environment, FileSystemLoader
 
 PWD = os.path.abspath(os.path.dirname(__file__))
@@ -147,7 +149,15 @@ if __name__ == '__main__':
     if s3.lookup(config.ASSET_BUCKET):
         bucket = s3.get_bucket(config.ASSET_BUCKET)
     else:
-        bucket = s3.create_bucket(config.ASSET_BUCKET)
+        try:
+            bucket = s3.create_bucket(config.ASSET_BUCKET)
+        except S3ResponseError:
+            msg = ("Unable to create bucket '{}'. Check that the "
+                   "value of the ASSET_BUCKET setting is valid in the "
+                   "configuration module, {}\n").format(config.ASSET_BUCKET,
+                       args.config)
+            sys.stderr.write(msg)
+            sys.exit(1)
 
     s3_key = Key(bucket)
     s3_key.key = "assets-%s.tgz" % ''.join(random.choice(
