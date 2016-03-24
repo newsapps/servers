@@ -71,9 +71,9 @@ PREVIOUS_GENERATION_INSTANCE_TYPES = [
 ]
 
 
-def render(template_name, template_dict):
+def render(template_name, template_context):
     template = env.get_template(template_name)
-    return template.render(**template_dict)
+    return template.render(**template_context)
 
 
 def get_or_create_asset_bucket(bucket_name):
@@ -167,8 +167,8 @@ if __name__ == '__main__':
         ec2 = boto.ec2.connect_to_region(args.region)
         s3 = S3Connection()
 
-    template_dict = config.__dict__.copy()
-    template_dict['SERVER_NAME'] = args.server_name
+    template_context = config.__dict__.copy()
+    template_context['SERVER_NAME'] = args.server_name
 
     # store assets
     if not args.pretend:
@@ -176,8 +176,8 @@ if __name__ == '__main__':
             bucket = get_or_create_asset_bucket(config.ASSET_BUCKET)
             asset_url, asset_key = upload_assets(bucket)
 
-            template_dict['ASSET_URL'] = asset_url
-            template_dict['ASSET_KEY'] = asset_key
+            template_context['ASSET_URL'] = asset_url
+            template_context['ASSET_KEY'] = asset_key
 
         except S3ResponseError:
             msg = ("Unable to create bucket '{}'. Check that the "
@@ -205,7 +205,7 @@ if __name__ == '__main__':
         col2 = 30
         build_filename = 'build.sh'
         with open(build_filename, 'w') as fp:
-            fp.write(render(args.build_script, template_dict))
+            fp.write(render(args.build_script, template_context))
         puts("")
         puts(colored.red("Just pretend mode"))
         puts("")
@@ -247,7 +247,7 @@ if __name__ == '__main__':
         reservation = ec2.run_instances(
             image_id=args.ami,
             key_name=args.key_pair,
-            user_data=render(args.build_script, template_dict),
+            user_data=render(args.build_script, template_context),
             security_groups=args.security_group.split(','),
             instance_type=args.instance
         )
