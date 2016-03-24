@@ -41,15 +41,15 @@ apt-get -q update && apt-get -q upgrade -y
 
 # grab some basic utilities
 install_pkg build-essential python-setuptools python-dev zip \
-    git-core subversion mercurial unattended-upgrades mailutils \
+    git subversion mercurial unattended-upgrades mailutils \
     libevent-dev \
     mdadm xfsprogs s3cmd python-pip python-virtualenv python-all-dev \
-    virtualenvwrapper libxml2-dev libxslt-dev libgeos-dev \
+    virtualenvwrapper libxml2-dev libxslt1-dev libgeos-dev \
     libpq-dev postgresql-client mysql-client libmysqlclient-dev \
     runit proj libfreetype6-dev libjpeg-dev zlib1g-dev \
     libgdal1-dev libgraphicsmagick++1-dev libboost-python-dev imagemagick \
-    enchant graphicsmagick python-pgmagick libtiff-dev liblcms2-dev \
-    libwebp-dev python-imaging libboost-python-dev
+    enchant graphicsmagick python-pgmagick libtiff4-dev libtiff5-dev liblcms2-dev \
+    libwebp-dev python-imaging
 
 # need an updated version of boto
 easy_install --upgrade boto
