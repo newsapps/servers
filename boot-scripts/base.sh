@@ -46,7 +46,7 @@ install_pkg build-essential python-setuptools python-dev zip \
     mdadm xfsprogs s3cmd python-pip python-virtualenv python-all-dev \
     virtualenvwrapper libxml2-dev libxslt1-dev libgeos-dev \
     libpq-dev postgresql-client mysql-client libmysqlclient-dev \
-    runit proj libfreetype6-dev libjpeg-dev zlib1g-dev \
+    runit libproj0 libproj-dev proj-bin libfreetype6-dev libjpeg-dev zlib1g-dev \
     libgdal1-dev libgraphicsmagick++1-dev libboost-python-dev imagemagick \
     enchant graphicsmagick python-pgmagick libtiff4-dev libtiff5-dev liblcms2-dev \
     libwebp-dev python-imaging
