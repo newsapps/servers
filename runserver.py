@@ -169,6 +169,7 @@ if __name__ == '__main__':
         s3 = S3Connection(calling_format=OrdinaryCallingFormat())
 
     template_context = config.__dict__.copy()
+    template_context['KEY_PAIR'] = args.key_pair
     template_context['SERVER_NAME'] = args.server_name
 
     # store assets
